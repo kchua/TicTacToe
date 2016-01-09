@@ -21,11 +21,11 @@ class Classicboard:
         self.entries[(x,y)] = player
         if self.diagonal(player) or self.row(player) or self.column(player):
             self.winner = player
-            for i in range(3):
-                for j in range(3):
-                    self.entries[(i, j)] = self.winner
+            self.winner_overwrite()
 
     def str_row(self, row):
+        '''Prints a single row from the game board.
+        '''
         return self[0, row] + ' ' + self[1, row] + ' ' + self[2, row]
 
     def __str__(self):
@@ -34,16 +34,29 @@ class Classicboard:
         return self.str_row(2)
 
     def diagonal(self, player):
+        '''Checks if a player has a connected diagonal.
+        '''
         return ((checker(self[0,0], self[1,1], self[2,2]) and self[0,0] == player) or
                 (checker(self[2,0], self[1,1], self[0,2]) and self[2,0] == player))
 
     def column(self, player):
+        '''Checks if a player has a connected column.
+        '''
         return any([checker(self[i,0], self[i,1], self[i,2]) and self[i,0] == player
             for i in range(3)])
 
     def row(self, player):
+        '''Checks is a player has a connected row.
+        '''
         return any([checker(self[0,i], self[1,i], self[2,i]) and self[0,i] == player
             for i in range(3)])
+
+    def winner_overwrite(self):
+        '''Overwrites all entries with the winner's symbol.
+        '''
+        for i in range(3):
+            for j in range(3):
+                self.entries[(i, j)] = self.winner
 
 class Bigboard(Classicboard):
     def __init__(self):
@@ -59,6 +72,12 @@ class Bigboard(Classicboard):
         '''
         self[self.position].change(x, y, player)
         self.position = (x, y)
+        if self.diagonal(player) or self.row(player) or self.column(player):
+            self.winner = player
+            self.winner_overwrite()
+            for i in range(3):
+                for j in range(3):
+                    self[i,j].winner_overwrite()
 
     def str_row(self, b_row, row):
         '''Prints a row across three boards.
@@ -75,7 +94,33 @@ class Bigboard(Classicboard):
             print('\n')
         return "Current board (zero-indexed): " + str(self.position)
 
+    def diagonal(self, player):
+        '''Checks if a player won a diagonal set of matches.
+        '''
+        return ((checker(self[0,0], self[1,1], self[2,2], lambda x: getattr(x, 'winner')) and self[0,0].winner == player) or
+                (checker(self[2,0], self[1,1], self[0,2], lambda x: getattr(x, 'winner')) and self[2,0].winner == player))
+
+    def column(self, player):
+        '''Checks if a player won matches that form a column.
+        '''
+        return any([checker(self[i,0], self[i,1], self[i,2], lambda x: getattr(x, 'winner')) and self[i,0].winner == player
+            for i in range(3)])
+
+    def row(self, player):
+        '''Checks if a player won matches that form a row.
+        '''
+        return any([checker(self[0,i], self[1,i], self[2,i], lambda x: getattr(x, 'winner')) and self[0,i].winner == player
+            for i in range(3)])
+
+    def winner_overwrite(self):
+        '''Overwrites the entire game board so that the winner is the winner of
+        the entire board.
+        '''
+        for i in range(3):
+            for j in range(3):
+                self[i,j].winner = self.winner
+
 ############################### Functions ######################################
 
-def checker(s1, s2, s3):
-    return s1 == s2 and s2 == s3
+def checker(s1, s2, s3, f=lambda x: x):
+    return f(s1) == f(s2) and f(s2) == f(s3)

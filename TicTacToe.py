@@ -57,7 +57,7 @@ while True:
                             assert re.search(r'[0-2] [0-2]', response) is not None
                             x, y = response.split()
                             x, y = int(x), int(y)
-                            assert board[board.position].winner is not None, "Board is already won. Please choose another board."
+                            assert board[x,y].winner is not None, "Board is already won. Please choose another board."
                             board.position = (x, y)
                             break
                         except AssertionError:

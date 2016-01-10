@@ -14,7 +14,28 @@ while True:
             print(response + 'is not valid input. Please try again.')
 
     if response == 'classic':
-        pass
+        board, player = Classicboard(), 1
+        print(board)
+
+        while board.winner is None:
+            while True:
+                try:
+                    print("Player " + str(player) + ", please choose a spot.")
+                    response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
+                    assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
+                    x, y = response.split()
+                    x, y = int(x), int(y)
+                    board.change(x, y, plyr[player])
+                    break
+                except AssertionError as e:
+                    print(e)
+
+            if board.winner is None:
+                print(board)
+                player = 3 - player
+
+        print(board)
+        print("Congratulations, player " + str(player) + "!")
 
     elif response == 'next-gen':
         board, player = Bigboard(), 1

@@ -21,7 +21,9 @@ class Classicboard:
         self.entries[(x,y)] = player
         if self.diagonal(player) or self.row(player) or self.column(player):
             self.winner = player
-            self.winner_overwrite()
+            self.overwrite(player)
+        elif self.is_full:
+            self.overwrite('T')
 
     def str_row(self, row):
         '''Prints a single row from the game board.
@@ -51,12 +53,19 @@ class Classicboard:
         return any([checker(self[0,i], self[1,i], self[2,i]) and self[0,i] == player
             for i in range(3)])
 
-    def winner_overwrite(self):
-        '''Overwrites all entries with the winner's symbol.
+    def overwrite(self, icon):
+        '''Overwrites all entries with the icon passed in.
         '''
         for i in range(3):
             for j in range(3):
-                self.entries[(i, j)] = self.winner
+                self.entries[(i, j)] = icon
+
+    @property
+    def is_full(self):
+        for _, value in self.entries.items():
+            if value == '-':
+                return False
+        return True
 
 class Bigboard(Classicboard):
     def __init__(self):

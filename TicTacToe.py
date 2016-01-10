@@ -4,6 +4,27 @@ import os
 
 plyr = {1: 'O', 2: 'X'}
 
+################################# Functions ###################################
+
+def prompt_for_board():
+    print("Player " + str(player) + ", please choose the board you would like to play on.")
+    response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
+    assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
+    x, y = response.split()
+    x, y = int(x), int(y)
+    assert board[x,y].winner is None, "Board is already won. Please choose another board."
+    board.position = (x, y)
+
+def prompt_for_move():
+    print("Player " + str(player) + ", please choose a spot.")
+    response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
+    assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
+    x, y = response.split()
+    x, y = int(x), int(y)
+    board.change(x, y, plyr[player])
+
+###############################################################################
+
 while True:
     while True:
         try:
@@ -20,12 +41,7 @@ while True:
         while board.winner is None:
             while True:
                 try:
-                    print("Player " + str(player) + ", please choose a spot.")
-                    response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
-                    assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
-                    x, y = response.split()
-                    x, y = int(x), int(y)
-                    board.change(x, y, plyr[player])
+                    prompt_for_move()
                     break
                 except AssertionError as e:
                     print(e)
@@ -43,26 +59,15 @@ while True:
 
         while True:
             try:
-                print("Player 1, please choose the board you would like to play on.")
-                response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
-                assert re.search(r'[0-2] [0-2]', response) is not None
+                prompt_for_board()
                 break
-            except AssertionError:
-                print("Invalid input. Please try again.")
-
-        x, y = response.split()
-        x, y = int(x), int(y)
-        board.position = (x, y)
+            except AssertionError as e:
+                print(e)
 
         while board.winner is None:
             while True:
                 try:
-                    print("Player " + str(player) + ", please choose a spot.")
-                    response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
-                    assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
-                    x, y = response.split()
-                    x, y = int(x), int(y)
-                    board.change(x, y, plyr[player])
+                    prompt_for_move()
                     break
                 except AssertionError as e:
                     print(e)
@@ -74,13 +79,7 @@ while True:
                 if board[board.position].winner is not None:
                     while True:
                         try:
-                            print("Player " + str(player) + ", please choose the board you would like to play on.")
-                            response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
-                            assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
-                            x, y = response.split()
-                            x, y = int(x), int(y)
-                            assert board[x,y].winner is None, "Board is already won. Please choose another board."
-                            board.position = (x, y)
+                            prompt_for_board()
                             break
                         except AssertionError as e:
                             print(e)

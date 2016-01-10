@@ -6,6 +6,14 @@ plyr = {1: 'O', 2: 'X'}
 
 ################################# Functions ###################################
 
+def try_loop(prompt):
+    while True:
+        try:
+            prompt()
+            break
+        except AssertionError as e:
+            print(e)
+
 def prompt_for_board():
     print("Player " + str(player) + ", please choose the board you would like to play on.")
     response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
@@ -39,12 +47,7 @@ while True:
         print(board)
 
         while board.winner is None:
-            while True:
-                try:
-                    prompt_for_move()
-                    break
-                except AssertionError as e:
-                    print(e)
+            try_loop(prompt_for_move)
 
             if board.winner is None:
                 print(board)
@@ -57,32 +60,17 @@ while True:
         board, player = Bigboard(), 1
         print(board)
 
-        while True:
-            try:
-                prompt_for_board()
-                break
-            except AssertionError as e:
-                print(e)
+        try_loop(prompt_for_board)
 
         while board.winner is None:
-            while True:
-                try:
-                    prompt_for_move()
-                    break
-                except AssertionError as e:
-                    print(e)
+            try_loop(prompt_for_move)
 
             if board.winner is None:
                 print(board)
                 player = 3 - player
 
                 if board[board.position].winner is not None:
-                    while True:
-                        try:
-                            prompt_for_board()
-                            break
-                        except AssertionError as e:
-                            print(e)
+                    try_loop(prompt_for_board)
 
         print(board)
         print("Congratulations, player " + str(player) + "!")

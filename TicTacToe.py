@@ -53,9 +53,6 @@ while True:
                 print(board)
                 player = 3 - player
 
-        print(board)
-        print("Congratulations, player " + str(player) + "!")
-
     elif response == 'next-gen':
         board, player = Bigboard(), 1
         print(board)
@@ -72,12 +69,16 @@ while True:
                 if board[board.position].winner is not None:
                     try_loop(prompt_for_board)
 
-        print(board)
+    print(board)
+
+    if board.winner != 'T':
         print("Congratulations, player " + str(player) + "!")
+    else:
+        print("It's a tie!")
 
     while True:
         try:
-            response = input("Play again? (Y/N)")
+            response = input("Play again? (Y/N) ")
             assert response == 'Y' or response == 'N'
             break
         except AssertionError:

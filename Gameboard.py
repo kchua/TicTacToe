@@ -21,7 +21,10 @@ class Classicboard:
         self.entries[(x,y)] = player
         if self.diagonal(player) or self.row(player) or self.column(player):
             self.winner = player
-            self.winner_overwrite()
+            self.overwrite(player)
+        elif self.is_full():
+            self.overwrite('T')
+            self.winner = 'T'
 
     def str_row(self, row):
         '''Prints a single row from the game board.
@@ -51,12 +54,18 @@ class Classicboard:
         return any([checker(self[0,i], self[1,i], self[2,i]) and self[0,i] == player
             for i in range(3)])
 
-    def winner_overwrite(self):
-        '''Overwrites all entries with the winner's symbol.
+    def overwrite(self, icon):
+        '''Overwrites all entries with the icon passed in.
         '''
         for i in range(3):
             for j in range(3):
-                self.entries[(i, j)] = self.winner
+                self.entries[(i, j)] = icon
+
+    def is_full(self, f=lambda x: x, val='-'):
+        for _, value in self.entries.items():
+            if f(value) == val:
+                return False
+        return True
 
 class Bigboard(Classicboard):
     def __init__(self):
@@ -74,10 +83,13 @@ class Bigboard(Classicboard):
         self.position = (x, y)
         if self.diagonal(player) or self.row(player) or self.column(player):
             self.winner = player
-            self.winner_overwrite()
+            self.overwrite(player)
             for i in range(3):
                 for j in range(3):
-                    self[i,j].winner_overwrite()
+                    self[i,j].overwrite(self.winner)
+        elif self.is_full(lambda x: getattr(x, 'winner'), None):
+            self.winner = 'T'
+            self.overwrite('T')
 
     def str_row(self, b_row, row):
         '''Prints a row across three boards.
@@ -112,13 +124,13 @@ class Bigboard(Classicboard):
         return any([checker(self[0,i], self[1,i], self[2,i], lambda x: getattr(x, 'winner')) and self[0,i].winner == player
             for i in range(3)])
 
-    def winner_overwrite(self):
-        '''Overwrites the entire game board so that the winner is the winner of
+    def overwrite(self, player):
+        '''Overwrites the entire game board so that a player is the winner of
         the entire board.
         '''
         for i in range(3):
             for j in range(3):
-                self[i,j].winner = self.winner
+                self[i,j].winner = player
 
 ############################### Functions ######################################
 

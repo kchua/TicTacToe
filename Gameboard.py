@@ -67,6 +67,13 @@ class Classicboard:
                 return False
         return True
 
+    def __eq__(self, board):
+        for i in range(3):
+            for j in range(3):
+                if self[i, j] != board[i, j]:
+                    return False
+        return True
+
 class Bigboard(Classicboard):
     def __init__(self):
         self.position = None

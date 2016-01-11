@@ -36,7 +36,8 @@ def possible_moves(board, player):
     for i in range(3):
         for j in range(3):
             if board[i,j] == '-':
-                moves_dict[(i, j)] = copy.deepcopy(board).change(i,j, plyr[player])
+                moves_dict[(i,j)] = copy.deepcopy(board)
+                moves_dict[(i,j)].change(i, j, plyr[player])
     return moves_dict
 
 def minimax(board, player=1,):

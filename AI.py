@@ -1,13 +1,8 @@
 from Gameboard import *
 import copy
-''' Minimax algorithm (tree-recursive)
-Base case: winning board
-Recursive case: board with many options
-AI player only for classic boards at this point
-'''
-minimax_dict = {1: max, 0: min}
+import pickle
 
-# AI player will be 'O' for testing purposes.
+minimax_dict = {1: max, 0: min}
 plyr = {1: 'O', 0: 'X'}
 
 def is_winning_board(board):
@@ -40,7 +35,34 @@ def possible_moves(board, player):
                 moves_dict[(i,j)].change(i, j, plyr[player])
     return moves_dict
 
-def minimax(board, player=1,):
-    '''Takes a board and returns the best move for the player, as well as a
-    dictionary of all possible moves mapped to how favorable they are.'''
-    pass
+def minimax(board, player):
+    '''Takes a board and returns a tuple whose first element is the score of the
+    best move and the second element is a tuple that represents the best move.
+    '''
+    assert is_winning_board(board) is False, "Board is already an end state!"
+    print(board)
+    moves_dict = {}
+    for move, new_board in possible_moves(board, player).items():
+        if is_winning_board(new_board):
+            moves_dict[move] = measure_of_advantage(new_board)
+        else:
+            moves_dict[move] = minimax(new_board, 1 - player)[0]
+    minimax_score = minimax_dict[player](moves_dict.values())
+    for move, score in moves_dict.items():
+        if score == minimax_score:
+            return score, move
+
+def memoize(f):
+    '''Returns a memoized version of minimax.
+    '''
+    inputs = {}
+    def memoized(board, player):
+        string = pickle.dumps((board, player), 1)
+        if string in inputs.keys():
+            return inputs[string]
+        else:
+            inputs[string] = f(board, player)
+            return inputs[string]
+    return memoized
+
+minimax = memoize(minimax)

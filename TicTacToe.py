@@ -1,8 +1,9 @@
 from Gameboard import *
+import AI
 import re
 import os
 
-plyr = {1: 'O', 2: 'X'}
+plyr = {1: 'X', 2: 'O'}
 
 ################################# Functions ###################################
 
@@ -43,11 +44,39 @@ while True:
             print(response + 'is not valid input. Please try again.')
 
     if response == 'classic':
+        while True:
+            try:
+                AI_plays = input("Play with an AI player? (Y/N) ")
+                assert AI_plays == 'Y' or AI_plays == 'N', "Invalid input, please try again."
+                break
+            except AssertionError as e:
+                print(e)
+
+        if AI_plays == 'Y':
+            while True:
+                try:
+                    response = input("Will you go first (X), or second (O)? ")
+                    assert response == 'X' or response == 'O', "Invalid input, please try again."
+                    if response == 'X':
+                        AI_player, AI.minimax_dict = 2, {1: min, 2: max}
+                    else:
+                        AI_player, AI.minimax_dict = 1, {1: max, 2: min}
+                    AI.AI_player = AI_player
+                    break
+                except AssertionError as e:
+                    print(e)
+
         board, player = Classicboard(), 1
         print(board)
 
         while board.winner is None:
-            try_loop(prompt_for_move)
+            if AI_plays == 'Y' and player == AI_player:
+                print("\n")
+                move = AI.minimax(board, AI_player)[1]
+                print(move[0], move[1])
+                board.change(move[0], move[1], plyr[AI_player])
+            else:
+                try_loop(prompt_for_move)
 
             if board.winner is None:
                 print(board)

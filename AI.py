@@ -2,8 +2,7 @@ from Gameboard import *
 import copy
 import pickle
 
-minimax_dict = {1: max, 0: min}
-plyr = {1: 'O', 0: 'X'}
+plyr = {1: 'X', 2: 'O'}
 
 def is_winning_board(board):
     '''Checks if a board is an end state.
@@ -18,7 +17,7 @@ def measure_of_advantage(board):
     assert is_winning_board(board), "Not an end state!"
     if board.winner == 'T':
         return 0
-    elif board.winner == plyr[1]:
+    elif board.winner == plyr[AI_player]:
         return 1
     else:
         return -1
@@ -40,13 +39,13 @@ def minimax(board, player):
     best move and the second element is a tuple that represents the best move.
     '''
     assert is_winning_board(board) is False, "Board is already an end state!"
-    print(board)
     moves_dict = {}
+    print(board)
     for move, new_board in possible_moves(board, player).items():
         if is_winning_board(new_board):
             moves_dict[move] = measure_of_advantage(new_board)
         else:
-            moves_dict[move] = minimax(new_board, 1 - player)[0]
+            moves_dict[move] = minimax(new_board, 3 - player)[0]
     minimax_score = minimax_dict[player](moves_dict.values())
     for move, score in moves_dict.items():
         if score == minimax_score:

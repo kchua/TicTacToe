@@ -1,6 +1,5 @@
 from Gameboard import *
-import copy
-import pickle
+import copy, pickle, random
 
 plyr = {1: 'X', 2: 'O'}
 
@@ -46,21 +45,27 @@ def minimax(board, player):
         else:
             moves_dict[move] = minimax(new_board, 3 - player)[0]
     minimax_score = minimax_dict[player](moves_dict.values())
+    best_moves = []
     for move, score in moves_dict.items():
         if score == minimax_score:
-            return score, move
+            best_moves += [move]
+    return (minimax_score, best_moves[random.randrange(0, len(best_moves))])
 
 def memoize(f):
-    '''Returns a memoized version of minimax.
+    '''Returns a memoized version of minimax whose cache can be reset.
     '''
     inputs = {}
-    def memoized(board, player):
-        string = pickle.dumps((board, player), 1)
-        if string in inputs.keys():
-            return inputs[string]
+    def memoized(*args):
+        nonlocal inputs
+        if not isinstance(args[0], Classicboard) and args[0] == 'reset':
+            inputs = {}
         else:
-            inputs[string] = f(board, player)
-            return inputs[string]
+            string = pickle.dumps((args[0], args[1]), 1)
+            if string in inputs.keys():
+                return inputs[string]
+            else:
+                inputs[string] = f(args[0], args[1])
+                return inputs[string]
     return memoized
 
 minimax = memoize(minimax)

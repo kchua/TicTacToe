@@ -55,6 +55,7 @@ while True:
         if AI_plays == 'Y':
             while True:
                 try:
+                    AI.minimax('reset')
                     response = input("Will you go first (X), or second (O)? ")
                     assert response == 'X' or response == 'O', "Invalid input, please try again."
                     if response == 'X':

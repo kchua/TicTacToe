@@ -40,7 +40,6 @@ def minimax(board, player):
     '''
     assert is_winning_board(board) is False, "Board is already an end state!"
     moves_dict = {}
-    print(board)
     for move, new_board in possible_moves(board, player).items():
         if is_winning_board(new_board):
             moves_dict[move] = measure_of_advantage(new_board)

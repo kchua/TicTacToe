@@ -1,21 +1,19 @@
 from Gameboard import *
-import AI
-import re
-import os
+import AI, re, os
 
 plyr = {1: 'X', 2: 'O'}
 
 ################################# Functions ###################################
 
-def try_loop(prompt):
+def try_loop(prompt, *args):
     while True:
         try:
-            prompt()
+            prompt(args)
             break
         except AssertionError as e:
             print(e)
 
-def prompt_for_board():
+def prompt_for_board(nil):
     print("Player " + str(player) + ", please choose the board you would like to play on.")
     response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
     assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
@@ -24,13 +22,22 @@ def prompt_for_board():
     assert board[x,y].winner is None, "Board is already won. Please choose another board."
     board.position = (x, y)
 
-def prompt_for_move():
+def prompt_for_move(nil):
     print("Player " + str(player) + ", please choose a spot.")
     response = input("Enter a number 0 - 2, followed by another number 0 - 2, separated by a space.\n\n")
     assert re.search(r'[0-2] [0-2]', response) is not None, "Invalid input. Please try again."
     x, y = response.split()
     x, y = int(x), int(y)
     board.change(x, y, plyr[player])
+
+def AI_setup(module):
+    AI.minimax('reset')
+    response = input("Will you go first (X), or second (O)? ")
+    assert response == 'X' or response == 'O', "Invalid input, please try again."
+    if response == 'X':
+        AI.AI_player, AI.minimax_dict = 2, {1: min, 2: max}
+    else:
+        AI.AI_player, AI.minimax_dict = 1, {1: max, 2: min}
 
 ###############################################################################
 
@@ -53,29 +60,17 @@ while True:
                 print(e)
 
         if AI_plays == 'Y':
-            while True:
-                try:
-                    AI.minimax('reset')
-                    response = input("Will you go first (X), or second (O)? ")
-                    assert response == 'X' or response == 'O', "Invalid input, please try again."
-                    if response == 'X':
-                        AI_player, AI.minimax_dict = 2, {1: min, 2: max}
-                    else:
-                        AI_player, AI.minimax_dict = 1, {1: max, 2: min}
-                    AI.AI_player = AI_player
-                    break
-                except AssertionError as e:
-                    print(e)
+            try_loop(AI_setup, AI)
 
         board, player = Classicboard(), 1
         print(board)
 
         while board.winner is None:
-            if AI_plays == 'Y' and player == AI_player:
+            if AI_plays == 'Y' and player == AI.AI_player:
                 print("\n")
-                move = AI.minimax(board, AI_player)[1]
+                move = AI.minimax(board, AI.AI_player)[1]
                 print(move[0], move[1])
-                board.change(move[0], move[1], plyr[AI_player])
+                board.change(move[0], move[1], plyr[AI.AI_player])
             else:
                 try_loop(prompt_for_move)
 
